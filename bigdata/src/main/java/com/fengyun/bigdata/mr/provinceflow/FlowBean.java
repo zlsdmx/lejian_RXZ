@@ -4,9 +4,9 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import org.apache.hadoop.io.Writable;
+import org.apache.hadoop.io.WritableComparable;
 
-public class FlowBean implements Writable {
+public class FlowBean implements WritableComparable<FlowBean>{
 
     private long upFlow;
 
@@ -80,7 +80,6 @@ public class FlowBean implements Writable {
     public int compareTo(FlowBean bean){
         
         return this.sumFlow>bean.getSumFlow()?-1:1;
-        
     }
     
 }

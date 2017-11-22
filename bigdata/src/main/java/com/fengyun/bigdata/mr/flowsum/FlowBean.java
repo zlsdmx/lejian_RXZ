@@ -4,14 +4,14 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import org.apache.hadoop.io.Writable;
+import org.apache.hadoop.io.WritableComparable;
 
 /**
  * 实现Writable接口，使得实体类可以被序列化。
  * @author zhengss
  *
  */
-public class FlowBean implements Writable {
+public class FlowBean implements WritableComparable<FlowBean>{
 
     private long upFlow;
 
@@ -19,7 +19,7 @@ public class FlowBean implements Writable {
 
     private long sumFlow;
 
-    // 反序列化时，需要反射调用空参构造函数，所以要显示定义一个
+    // 反序列化时，需要反射调用空参构造函数，所以要显式定义一个
     public FlowBean() {
         
     }
@@ -64,6 +64,7 @@ public class FlowBean implements Writable {
 
     /**
      * 序列化方法
+     * 属于重写
      */
     public void write(DataOutput out) throws IOException {
         out.writeLong(upFlow);
@@ -87,7 +88,11 @@ public class FlowBean implements Writable {
         return upFlow + "\t" + dFlow + "\t" + sumFlow;
     }
     
-    
+    /**
+     * 重写比较方法，使得比较bean就是比较sumFlow
+     * @param bean
+     * @return
+     */
     public int compareTo(FlowBean bean){
         
         return this.sumFlow>bean.getSumFlow()?-1:1;

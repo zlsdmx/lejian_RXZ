@@ -1,1 +1,9 @@
 /target/
+/.settings/
+.project
+.class
+.classpath
+.svn
+_svn
+*/.git/*
+.deployables
