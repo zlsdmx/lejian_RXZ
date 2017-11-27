@@ -76,7 +76,7 @@ public class RJoin {
 			for (InfoBean bean : beans) {
 				if ("1".equals(bean.getFlag())) {	//产品的
 					try {
-						BeanUtils.copyProperties(pdBean, bean);
+						BeanUtils.copyProperties(pdBean, bean); //获取到那个产品的对象
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -84,15 +84,15 @@ public class RJoin {
 					InfoBean odbean = new InfoBean();
 					try {
 						BeanUtils.copyProperties(odbean, bean);
-						orderBeans.add(odbean);
+						orderBeans.add(odbean);//将所有的订单对象存起来
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-				}
+				} 
 
 			}
 
-			// 拼接两类数据形成最终结果
+			// 遍历所有订单对象 拼接两类数据形成最终结果
 			for (InfoBean bean : orderBeans) {
 
 				bean.setPname(pdBean.getPname());
@@ -109,13 +109,17 @@ public class RJoin {
 		
 		conf.set("mapred.textoutputformat.separator", "\t");
 		
+		//本地模式时 将yarn改成local
+		conf.set("mapreduce.framework.name", "local");  
+	        conf.set("fs.defaultFS", "hdfs://mini0:9000/");
+//	        conf.set("fs.defaultFS", "file:///");
+		
 		Job job = Job.getInstance(conf);
 
 		// 指定本程序的jar包所在的本地路径
-		// job.setJarByClass(RJoin.class);
-//		job.setJar("c:/join.jar");
+		job.setJar("C:/Users/zhengss/Documents/rjoin.jar");
 
-		job.setJarByClass(RJoin.class);
+//		job.setJarByClass(RJoin.class);
 		// 指定本业务job要使用的mapper/Reducer业务类
 		job.setMapperClass(RJoinMapper.class);
 		job.setReducerClass(RJoinReducer.class);

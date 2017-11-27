@@ -24,10 +24,15 @@ public class WordcountDriver {
             args[1] = "hdfs://master:9000/wordcount/output8";
         }
         Configuration conf = new Configuration();
-        //liux上面已经配置了这些信息，在linux上跑的时候不需要配置这些信息
-        /*conf.set("mapreduce.framework.name", "yarn");  //本地模式时 将yarn改成local
+        //liux上面已经配置了这些信息，在linux上跑的时候默认不需要配置这些信息
+        /*conf.set("mapreduce.framework.name", "yarn");  
         conf.set("yarn.resoucemanager.hostname", "mini1");
         */
+        
+        //本地模式时 将yarn改成local
+        conf.set("mapreduce.framework.name", "local");  
+        conf.set("fs.defaultFS", "file:///");
+         
         
         // 指定本程序的jar包所在的本地路径
         Job job = Job.getInstance(conf);
