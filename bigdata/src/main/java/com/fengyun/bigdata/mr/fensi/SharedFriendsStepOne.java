@@ -3,11 +3,14 @@ package com.fengyun.bigdata.mr.fensi;
 import java.io.IOException;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 /**
  * A:B,C,D,F,E,O B:A,C,E,K C:F,A,D,I D:A,E,F,L E:B,C,D,M,L F:A,B,C,D,E,O,M G:A,C,D,E,F H:A,C,D,E,O
@@ -25,7 +28,7 @@ public class SharedFriendsStepOne {
 
     public static class StepOneMapper extends Mapper<LongWritable, Text, Text, Text> {
 
-        protected void map(Long key, Text value, Mapper<LongWritable, Text, Text, Text>.Context context) throws IOException, InterruptedException {
+        protected void map(LongWritable key, Text value, Mapper<LongWritable, Text, Text, Text>.Context context) throws IOException, InterruptedException {
             String line = value.toString();
             String[] person_friends = line.split(":");
             String person = person_friends[0];
@@ -54,7 +57,7 @@ public class SharedFriendsStepOne {
         }
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
 
         Configuration conf = new Configuration();
         Job job = Job.getInstance(conf);
@@ -69,11 +72,9 @@ public class SharedFriendsStepOne {
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
         
-        
-        
-        
-        
-        
-        
+        FileInputFormat.setInputPaths(job, new Path("C:/Users/zhengss/Documents/input/relations.txt"));
+        FileOutputFormat.setOutputPath(job, new Path("C:/Users/zhengss/Documents/output"));
+        boolean res = job.waitForCompletion(true);
+        System.exit(res ? 0 : 1);
     }
 }
