@@ -1,11 +1,20 @@
 package com.fengyun.bigdata.mr.fensi;
 
 import java.io.IOException;
+import java.util.Arrays;
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+import com.fengyun.bigdata.mr.fensi.SharedFriendsStepOne.StepOneMapper;
+import com.fengyun.bigdata.mr.fensi.SharedFriendsStepOne.StepOneReducer;
 
 /**
 A:B,C,D,F,E,O
@@ -36,44 +45,60 @@ a-b :  c ,e
 
 public class SharedFriendsStepTwo {
     
-public static class StepOneMapper extends Mapper<LongWritable, Text, Text, Text>{
-
-        
-        protected void map(Long key, Text value, Mapper<LongWritable, Text, Text, Text>.Context context) throws IOException, InterruptedException {
+    public static class StepTwoMapper extends Mapper<LongWritable, Text, Text, Text>{
+        // A     I,K,C,B,G,F,H,O,D,
+        protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             String line = value.toString();
-            String[] person_friends = line.split(":");
-            String person = person_friends[0];
-            String[] friends = person_friends[1].split(",");
-            for (String friend : friends) {
-                //确定  [宾<——主 ]  汇聚关系
-                context.write(new Text(friend), new Text(person));
+            String[] friend_persons = line.split("\t");
+            String friend = friend_persons[0];
+            String[] persons = friend_persons[1].split(",");
+            Arrays.sort(persons);
+            
+            for (int i=0;  i<persons.length-2; i++) {
+                for (int j = i+1; j < persons.length-1; j++) {
+                    //确定  [主-主——>宾 ]  汇聚关系 写出一行 汇聚关系
+                    context.write(new Text(persons[i] + "-" + persons[j]), new Text(friend));
+                }
             }
         }
-        
-    } 
+    }
     
-    public static class StepOneReducer extends Reducer<Text, Text, Text, Text>{
+    public static class StepTwoReducer extends Reducer<Text, Text, Text, Text>{
 
         @Override
-        protected void reduce(Text friend, Iterable<Text> persons, Reducer<Text, Text, Text, Text>.Context context) throws IOException, InterruptedException {
+        protected void reduce(Text person_person, Iterable<Text> friends, Context context) throws IOException, InterruptedException {
             StringBuffer sb = new StringBuffer();
-            for (Text text : persons) {
+            for (Text friend : friends) {
                 //汇聚  [主，主...] 
-                sb.append(text).append(",");
-                
+                sb.append(friend).append(" ");
             }
-            //将汇聚好的 [宾<——主，主...] 写到缓存
-            context.write(friend, new Text(sb.toString()));
+            //将汇聚好的 [主_主——>宾] 写到缓存
+            context.write(person_person, new Text(sb.toString()));
             
         }
     }
  
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         
+        Configuration conf = new Configuration();
+        Job job = Job.getInstance(conf);
+        //设置类路径为jar包路径
+        job.setJarByClass(SharedFriendsStepTwo.class);
+        //设置mapper类和输出k-v类型
+        job.setMapperClass(StepTwoMapper.class);
+//        job.setMapOutputKeyClass(Text.class);
+//        job.setMapOutputValueClass(Text.class);
+        //设置reducer类和输出k-v类型
+        job.setReducerClass(StepTwoReducer.class);
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(Text.class);
         
+        FileInputFormat.setInputPaths(job, new Path("C:/Users/zhengss/Documents/output/part-r-00000"));
+        FileOutputFormat.setOutputPath(job, new Path("C:/Users/zhengss/Documents/output1"));
+        boolean res = job.waitForCompletion(true);
+        System.exit(res ? 0 : 1);
         
         
     }
-    
-    
+
 }
