@@ -34,7 +34,7 @@ public class SharedFriendsStepOne {
             String person = person_friends[0];
             String[] friends = person_friends[1].split(",");
             for (String friend : friends) {
-                // 确定 [宾<——主 ] 汇聚关系
+                // 确定 [宾<——主 ]/[key<——value] 汇聚关系，通过宾，汇聚所有 该人是哪些‘主’的 ‘宾’，即找出所有该人相关的‘主’
                 context.write(new Text(friend), new Text(person));
             }
         }
