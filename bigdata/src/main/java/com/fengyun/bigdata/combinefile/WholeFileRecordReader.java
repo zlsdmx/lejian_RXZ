@@ -16,72 +16,79 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 
 /**
  * 
- * RecordReader的核心工作逻辑：
- * 通过nextKeyValue()方法去读取数据构造将返回的key   value
- * 通过getCurrentKey 和 getCurrentValue来返回上面构造好的key和value
+ * RecordReader的核心工作逻辑： 通过nextKeyValue()方法去读取数据构造将返回的key value 通过getCurrentKey 和
+ * getCurrentValue来返回上面构造好的key和value
  * 
  * 
  * @author
- *
+ * 
  */
 class WholeFileRecordReader extends RecordReader<NullWritable, BytesWritable> {
-        private FileSplit fileSplit;
-        private Configuration conf;
-        private BytesWritable value = new BytesWritable();
-        private boolean processed = false;
+    private FileSplit fileSplit; // 文件分片
 
-        @Override
-        public void initialize(InputSplit split, TaskAttemptContext context)
-                        throws IOException, InterruptedException {
-                this.fileSplit = (FileSplit) split;
-                this.conf = context.getConfiguration();
-        }
+    private Configuration conf; // 配置
 
-        @Override
-        public boolean nextKeyValue() throws IOException, InterruptedException {
-                if (!processed) {
-                        byte[] contents = new byte[(int) fileSplit.getLength()];
-                        Path file = fileSplit.getPath();
-                        FileSystem fs = file.getFileSystem(conf);
-                        FSDataInputStream in = null;
-                        try {
-                                in = fs.open(file);
-                                IOUtils.readFully(in, contents, 0, contents.length);
-                                value.set(contents, 0, contents.length);
-                        } finally {
-                                IOUtils.closeStream(in);
-                        }
-                        processed = true;
-                        return true;
-                }
-                return false;
-        }
+    private BytesWritable value = new BytesWritable(); // 可写比特流
 
-        
-        
-        
-        @Override
-        public NullWritable getCurrentKey() throws IOException,
-                        InterruptedException {
-                return NullWritable.get();
-        }
+    private boolean processed = false;
 
-        @Override
-        public BytesWritable getCurrentValue() throws IOException,
-                        InterruptedException {
-                return value;
-        }
+    /**
+     * 初始化类 的两个属性：文件分片和上下文缓存
+     */
+    @Override
+    public void initialize(InputSplit split, TaskAttemptContext context) throws IOException, InterruptedException {
+        this.fileSplit = (FileSplit) split;
+        this.conf = context.getConfiguration();
+    }
 
-        /**
-         * 返回当前进度
-         */
-        @Override
-        public float getProgress() throws IOException {
-                return processed ? 1.0f : 0.0f;
+    @Override
+    public boolean nextKeyValue() throws IOException, InterruptedException {
+        if (!processed) {
+            // 根据文件分片 获取 文件分片大小、定义一个byte自己数组用于保存文件，再获取文件路径file；
+            byte[] contents = new byte[(int) fileSplit.getLength()];
+            Path file = fileSplit.getPath();
+            //通过文件路径file和conf配置 获取到文件系统句柄，
+            FileSystem fs = file.getFileSystem(conf);
+            //定义一个文件系统输入流in
+            FSDataInputStream in = null;
+            try {
+                //打开文件、写入输入流
+                in = fs.open(file);
+                //使用io工具将输入流的内容拷贝到 比特数组中byte[]
+                IOUtils.readFully(in, contents, 0, contents.length);
+                //将文件的输入流读取到的内容写入到 成员属性 可写比特流value中
+                value.set(contents, 0, contents.length);
+            } finally {
+                //关闭输入流
+                IOUtils.closeStream(in);
+            }
+            //设置标志变量
+            processed = true;
+            return true;
         }
+        return false;
+    }
 
-        @Override
-        public void close() throws IOException {
-                // do nothing
-        }
+    @Override
+    public NullWritable getCurrentKey() throws IOException, InterruptedException {
+        return NullWritable.get();
+    }
+
+    @Override
+    public BytesWritable getCurrentValue() throws IOException, InterruptedException {
+        return value;
+    }
+
+    /**
+     * 返回当前进度
+     */
+    @Override
+    public float getProgress() throws IOException {
+        return processed ? 1.0f : 0.0f;
+    }
+
+    @Override
+    public void close() throws IOException {
+        // do nothing
+    }
 }
