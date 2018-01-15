@@ -1,5 +1,8 @@
 package com.fengyun.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +13,7 @@ import com.fengyun.exception.EServerException;
 import com.fengyun.exception.ServiceException;
 import com.fengyun.po.User;
 import com.fengyun.service.UserService;
+import com.fengyun.utils.SessionUtils;
 
 @RequestMapping(value="home")
 @Controller
@@ -52,8 +56,9 @@ public class HomeController extends BaseController{
         	throw new ServiceException(EServerException.UserIdOrPwdError.status,
         			EServerException.UserIdOrPwdError.msg); 
         }
-        
-        return this.sendToClient(userService.login(user));
+        Map<String,String> result = new HashMap<String,String>();
+        result.put(SessionUtils.KEY_TOKEN, userService.login(user));
+        return this.sendToClient(result);
     }
     
     /**
@@ -76,8 +81,9 @@ public class HomeController extends BaseController{
         	throw new ServiceException(EServerException.UserIdOrPwdError.status,
         			EServerException.UserIdOrPwdError.msg); 
         }
-        
-        return this.sendToClient(userService.login(user));
+        Map<String,String> result = new HashMap<String,String>();
+        result.put(SessionUtils.KEY_TOKEN, userService.login(user));
+        return this.sendToClient(result);
     }
     
     /**
@@ -103,7 +109,9 @@ public class HomeController extends BaseController{
         	throw new ServiceException(EServerException.ServerError.status,
         			EServerException.ServerError.msg); 
         }
-    	return this.sendToClient(userService.login(user));
+        Map<String,String> result = new HashMap<String,String>();
+        result.put(SessionUtils.KEY_TOKEN, userService.login(user));
+    	return this.sendToClient(result);
     }
     
     /**
@@ -131,6 +139,8 @@ public class HomeController extends BaseController{
     		 throw new ServiceException(EServerException.ServerError.status,
           			EServerException.ServerError.msg); 
     	 }
-        return this.sendToClient(isReg);
+    	 Map<String,Boolean> result = new HashMap<String,Boolean>();
+         result.put("isReg", isReg);
+        return this.sendToClient(result);
     }
 }

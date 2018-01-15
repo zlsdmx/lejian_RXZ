@@ -35,6 +35,9 @@ public class UserController extends BaseController{
         return this.sendToClient(user);
     }
     
+    
+    
+    
     @SystemLog(methods = "用户查询",module = "用户管理")
     @RequestMapping("/rest/{userId}")
     @ResponseBody
@@ -59,6 +62,14 @@ public class UserController extends BaseController{
         System.out.println("=========="+pageNum+"\t"+pageSize+"==========");
         List<User> list = userService.queryByPage(pageNum, pageSize);
         return  ResponseEntity.ok(list);
+    }
+    
+    
+    @RequestMapping("/byUserId/{userId}")
+    @ResponseBody
+    public ResponseEntity<User> getUserByuserId( @PathVariable("userId")String userId) throws Exception{
+        User user = userService.queryByUserId(userId);
+        return  ResponseEntity.ok(user);
     }
     
     @RequestMapping("/bypagehelper/{pageNum}/{pageSize}")

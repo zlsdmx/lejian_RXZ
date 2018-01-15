@@ -15,11 +15,13 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.fengyun.annotation.SystemLog;
 import com.fengyun.po.MyLog;
+import com.fengyun.service.MyLogService;
 
 /**
  * @author zhengss
@@ -27,11 +29,19 @@ import com.fengyun.po.MyLog;
  */
 @Aspect
 public class LogAopAction extends BaseController{
+    
+    @Autowired
+    private MyLogService myLogService;
+    
+    
     //获取开始时间
     private long BEGIN_TIME ;
 
     //获取结束时间
     private long END_TIME;
+    
+    
+    
 
     //定义本次log实体
     private MyLog log = new MyLog();
@@ -142,6 +152,8 @@ public class LogAopAction extends BaseController{
             log.setGmtCreate(new Date(BEGIN_TIME));
             System.out.println(log);
             System.out.println(">>>>>>>>>>存入到数据库");
+            myLogService.saveMyLog(log);
+            
         }else {
             System.out.println(log);
             System.out.println(">>>>>>>>不存入到数据库");

@@ -51,8 +51,8 @@
      <!-- Configures Handler Interceptors -->	
 	<mvc:interceptors>
 		<bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" />
-		<bean class="com.fengyun.interceptor.CenterInterceptor" />
 		<bean class="com.fengyun.interceptor.AuthInterceptor" />
+		<bean class="com.fengyun.interceptor.CenterInterceptor" />
 	</mvc:interceptors>
 	
     <!--Aop切面编程的配置 -->

@@ -76,19 +76,19 @@ public class User {
 	 * 创建时间
 	 */
 	@Column(name = "create_Time")
-	private Date createTime = new Date();
+	private Date createTime ;//= new Date();
 
 	/**
 	 * 登录次数
 	 */
 	@Column(name = "login_Num")
-	private Integer loginNum;
+	private Integer loginNum ;//=0;
 
 	/**
 	 * 最后登录时间
 	 */
 	@Column(name = "lastlogin_Time")
-	private Date lastloginTime = new Date();
+	private Date lastloginTime ;//= new Date();
 
 	/**
 	 * @return id

@@ -45,7 +45,8 @@ public abstract class BaseService<T> {
      * @return
      */
     public T queryOne(T record) {
-        return mapper.selectOne(record);
+        T selectOne = mapper.selectOne(record);
+        return selectOne;
     }
 
     /**

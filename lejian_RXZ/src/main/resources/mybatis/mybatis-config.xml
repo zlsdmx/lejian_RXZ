@@ -7,6 +7,7 @@
 	<settings>
 		<!-- 是否开启自动驼峰命名规则（camel case）映射 -->
 		<setting name="mapUnderscoreToCamelCase" value="true" />
+		<setting name="logImpl" value="LOG4J"/>
 	</settings>
 	
 	

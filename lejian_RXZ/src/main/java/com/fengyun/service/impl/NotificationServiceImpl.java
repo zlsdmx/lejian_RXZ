@@ -3,6 +3,8 @@ package com.fengyun.service.impl;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.OrderBy;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,7 @@ import com.fengyun.po.Notification;
 import com.fengyun.service.NotificationService;
 import com.github.pagehelper.PageInfo;
 import tk.mybatis.mapper.entity.Example;
+import tk.mybatis.mapper.entity.Example.Criteria;
 @Service
 public class NotificationServiceImpl extends BaseService<Notification> implements NotificationService {
 
@@ -45,7 +48,7 @@ public class NotificationServiceImpl extends BaseService<Notification> implement
     public List<Notification> queryUnreachedMsg(int num){
         Example example = new Example(Notification.class);
         example.createCriteria()
-                .andGreaterThanOrEqualTo("_id", num)
+                .andGreaterThanOrEqualTo("id", num)
                 .andGreaterThanOrEqualTo("expireTime", new Date());
         
     	List<Notification> list = super.queryByExample(example);
@@ -75,8 +78,10 @@ public class NotificationServiceImpl extends BaseService<Notification> implement
     
     public PageInfo<Notification> queryByPageAndExample(Long id, int pageNum, int pageSize) {
         Example example = new Example(Notification.class);
-        example.createCriteria()
-                .andGreaterThanOrEqualTo("id", id);
+        Criteria criteria = example.createCriteria();
+        criteria.andGreaterThanOrEqualTo("id", id);//设置精确条件
+        criteria.andLike("title", "%通知%");//设置模糊查询条件
+        example.setOrderByClause("createTime");//设置排序依据列
         
         PageInfo<Notification> pageInfo = super.queryByPageAndExample(pageNum, pageSize, example);
         return pageInfo;

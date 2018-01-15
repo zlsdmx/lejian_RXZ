@@ -3,6 +3,8 @@ package com.fengyun.po;
 import java.util.Date;
 import javax.persistence.*;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 @Table(name = "my_log")
 public class MyLog {
     /**
@@ -10,7 +12,7 @@ public class MyLog {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id = 0L;
 
     @Column(name = "login_account")
     private String loginAccount;
@@ -31,6 +33,7 @@ public class MyLog {
     private String description;
 
     @Column(name = "gmt_create")
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")// HH:mm:ss
     private Date gmtCreate;
 
     private Byte state;

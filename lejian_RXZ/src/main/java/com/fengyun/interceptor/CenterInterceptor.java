@@ -6,11 +6,16 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.fengyun.cache.ClientCacheCenter;
 import com.fengyun.exception.EServerException;
 import com.fengyun.exception.ServiceException;
+import com.fengyun.utils.SessionUtils;
 import com.fengyun.utils.json.HtmlUtil;
 
 /**
@@ -18,16 +23,13 @@ import com.fengyun.utils.json.HtmlUtil;
  * 日志记录
  */
 public class CenterInterceptor extends HandlerInterceptorAdapter{
+	
+	private static Log log = LogFactory.getLog(CenterInterceptor.class);
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)    
 	        throws Exception {   
-		//访问日志
-//		String userId = "";
-//		Object session = request.getSession().getAttribute(SessionUtils.SESSION_USERID);
-//		if(session != null)
-//			userId = String.valueOf(session);
-//		LogManager.visit(request.getRequestURL().toString(), request.getRemoteAddr(),userId );
+		//log.info("CenterInterceptor preHandle");
 		return true;    
 	}   
 	
@@ -35,12 +37,14 @@ public class CenterInterceptor extends HandlerInterceptorAdapter{
     public void postHandle(    
             HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView)    
             throws Exception {    
+		//log.info("CenterInterceptor postHandle");
     }    
     
     @Override
 	public void afterCompletion(HttpServletRequest request,
 			HttpServletResponse response, Object handler, Exception ex)
 			throws Exception {
+    	//log.info("CenterInterceptor afterCompletion");
     	//拦截业务异常信息
     	if(ex != null){
     		int status = EServerException.OK.status;
@@ -62,5 +66,9 @@ public class CenterInterceptor extends HandlerInterceptorAdapter{
 		}else{
 			super.afterCompletion(request, response, handler, ex);
 		}
-    }
+    	//token存在,更新操作时间
+		String token = request.getParameter(SessionUtils.KEY_TOKEN);
+		if(StringUtils.isNotBlank(token))
+			ClientCacheCenter.updateActTime(token);
+	}
 }

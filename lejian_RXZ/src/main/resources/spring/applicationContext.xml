@@ -70,9 +70,5 @@
 		<aop:advisor advice-ref="txAdvice" pointcut-ref="myPointcut" />
 	</aop:config>
 
-	<!--Aop切面编程的配置 -->
-	<aop:aspectj-autoproxy expose-proxy="true"></aop:aspectj-autoproxy>
-	<!-- 日志切面处理类 -->
-	<bean id="logAopAction" class="com.fengyun.controller.LogAopAction"></bean>
 
 </beans>

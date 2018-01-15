@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -21,10 +23,13 @@ import com.fengyun.utils.json.HtmlUtil;
   *
  */
 public class AuthInterceptor extends HandlerInterceptorAdapter{
-
+	
+	private static Log log = LogFactory.getLog(AuthInterceptor.class);
+	
 	@Override
 	public boolean preHandle(HttpServletRequest request,
 			HttpServletResponse response, Object handler) throws Exception {
+		//log.info("AuthInterceptor preHandle!");
 		try{
 			HandlerMethod method = (HandlerMethod)handler;
 			Auth  auth = method.getMethod().getAnnotation(Auth.class);
