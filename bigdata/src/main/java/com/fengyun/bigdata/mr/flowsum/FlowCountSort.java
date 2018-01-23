@@ -15,7 +15,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 /**
  * 13480253104 180 180 360 13502468823 7335 110349 117684 13560436666 1116 954 2070
- * 
+ * 统计上下行流量 排序
  * @author
  * 
  */

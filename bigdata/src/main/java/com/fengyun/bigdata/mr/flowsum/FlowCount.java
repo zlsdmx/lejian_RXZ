@@ -12,6 +12,12 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
+/**
+ * 统计上下行流量
+ * @author zhengss
+ * 使用两个静态内部类实现map程序和reducer程序
+ *
+ */
 public class FlowCount {
 
     static class FlowCountMapper extends Mapper<LongWritable, Text, Text, FlowBean> {

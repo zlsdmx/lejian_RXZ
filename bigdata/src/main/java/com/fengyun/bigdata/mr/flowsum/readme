@@ -1,0 +1,6 @@
+这是演示mr自己的序列化方式的示例程序
+
+
+hadoop上的启动命令示例：
+指定主程序，和输入、输出目录
+hadoop jar hadoop-mapreduce-example-2.4.1.jar wordcount  /wordcount/data /wordcount/out
